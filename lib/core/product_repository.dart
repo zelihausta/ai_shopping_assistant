@@ -1,0 +1,1 @@
+//assets/product_info.json'u okur

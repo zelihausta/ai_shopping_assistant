@@ -1,0 +1,1 @@
+// ekrandaki kutu/etiket (mock)

@@ -1,0 +1,1 @@
+// kamera önizleme + "Demo Tespit" butonu
