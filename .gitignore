@@ -33,6 +33,17 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Flutter platform specific build files
+android/build/
+linux/flutter/generated_plugins.cmake
+windows/flutter/generated_plugins.cmake
+
+# Python / Backend
+backend/venv/
+backend/best.pt
+datasets/
+
+
 # Symbolication related
 app.*.symbols
 
