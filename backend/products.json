@@ -1,0 +1,20 @@
+{
+  "Classic": {
+    "brand": "Nescafé",
+    "name": "Nescafé Classic",
+    "ingredients": "Kavrulmuş ve öğütülmüş kahve çekirdekleri",
+    "price": 75
+  },
+  "Gold": {
+    "brand": "Nescafé",
+    "name": "Nescafé Gold",
+    "ingredients": "Yüksek kaliteli çözünebilir kahve",
+    "price": 95
+  },
+  "Indo-Cafe": {
+    "brand": "Nescafé",
+    "name": "Nescafé Indo-Café",
+    "ingredients": "Kahve ve Hindistan cevizi aroması",
+    "price": 85
+  }
+}
