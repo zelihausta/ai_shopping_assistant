@@ -20,6 +20,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _detections = [];
     });
 
     try {
@@ -46,7 +47,6 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Fotoğraf arkaplan
           Image.file(
             File(widget.imagePath),
             fit: BoxFit.cover,
@@ -62,10 +62,16 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                   color: Colors.red,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                  size: 28,
+                ),
               ),
             ),
           ),
+
+          // ⬇️ Alt panel
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -73,7 +79,9 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
               padding: const EdgeInsets.all(18),
               decoration: const BoxDecoration(
                 color: Color(0xFF1A1A1A),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -84,19 +92,21 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                     ),
 
                   if (_errorMessage != null) ...[
+                    const SizedBox(height: 8),
                     Text(
                       _errorMessage!,
                       style: const TextStyle(color: Colors.redAccent),
                     ),
-                    const SizedBox(height: 8),
                   ],
 
-                  // 🔴 Kırmızı buton
+                  const SizedBox(height: 12),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 32, vertical: 14),
+                        horizontal: 32,
+                        vertical: 14,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18),
                       ),
@@ -111,60 +121,85 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
 
+                  const SizedBox(height: 16),
+                  if (!_isLoading && _detections.isEmpty)
+                    Text(
+                      "Herhangi bir ürün algılanamadı.",
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 16,
+                      ),
+                    ),
                   if (_detections.isNotEmpty)
                     SizedBox(
-                      height: 200,
+                      height:
+                      MediaQuery.of(context).size.height * 0.3,
                       child: ListView.builder(
                         itemCount: _detections.length,
                         itemBuilder: (context, index) {
                           final d = _detections[index];
+
                           return Container(
-                            margin: const EdgeInsets.only(bottom: 12),
+                            margin:
+                            const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.white10,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius:
+                              BorderRadius.circular(16),
                               border: Border.all(
-                                color: Colors.redAccent.withOpacity(0.5),
+                                color: Colors.redAccent
+                                    .withOpacity(0.5),
                                 width: 1,
                               ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.redAccent.withOpacity(0.25),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
                             ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
                               children: [
-                                // Ürün bilgisi
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      d.name,
-                                      style: const TextStyle(
+                                // 🧾 Ürün bilgileri
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        d.name,
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 18,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      d.ingredients,
-                                      style: TextStyle(
-                                        color:
-                                        Colors.white.withOpacity(0.7),
-                                        fontSize: 14,
+                                          fontWeight:
+                                          FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        d.ingredients,
+                                        maxLines: 2,
+                                        overflow:
+                                        TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: Colors.white
+                                              .withOpacity(0.7),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      if (d.confidence > 0)
+                                        Text(
+                                          "Güven: %${(d.confidence * 100).toStringAsFixed(0)}",
+                                          style: TextStyle(
+                                            color: Colors.white
+                                                .withOpacity(0.5),
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
                                 ),
 
-                                // Fiyat etiketi 🔴
+
                                 Text(
                                   "${d.price.toStringAsFixed(2)} ₺",
                                   style: const TextStyle(

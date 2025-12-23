@@ -28,5 +28,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/data/product_info.json
+
     - assets/models/

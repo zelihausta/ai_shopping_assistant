@@ -21,8 +21,9 @@ class DetectionService {
     final responseBody = await response.stream.bytesToString();
     final data = jsonDecode(responseBody) as Map<String, dynamic>;
 
-    final List detectionsJson = data['detections'] ?? [];
-    return detectionsJson
+    final List productsJson = data['products'] ?? [];
+
+    return productsJson
         .map((e) => ProductDetection.fromJson(e as Map<String, dynamic>))
         .toList();
   }
