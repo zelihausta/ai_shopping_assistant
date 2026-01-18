@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:image_picker/image_picker.dart';
 import 'display_picture_screen.dart';
 
 class CameraScreen extends StatefulWidget {
@@ -13,6 +14,8 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -49,6 +52,23 @@ class _CameraScreenState extends State<CameraScreen> {
       debugPrint('Fotoğraf çekme hatası: $e');
     }
   }
+  Future<void> _pickFromGallery() async {
+    try {
+      final XFile? image =
+      await _picker.pickImage(source: ImageSource.gallery);
+
+      if (image == null) return;
+      if (!mounted) return;
+
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => DisplayPictureScreen(imagePath: image.path),
+        ),
+      );
+    } catch (e) {
+      debugPrint('Galeriden resim seçme hatası: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,21 +96,51 @@ class _CameraScreenState extends State<CameraScreen> {
                   right: 0,
                   child: Column(
                     children: [
-                      GestureDetector(
-                        onTap: _takePicture,
-                        child: Container(
-                          width: 90,
-                          height: 90,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 4),
-                            color: Colors.redAccent,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: _takePicture,
+                            child: Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 4,
+                                ),
+                                color: Colors.redAccent,
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 36,
+                              ),
+                            ),
                           ),
-                          child: const Center(
-                            child: Icon(Icons.camera_alt,
-                                color: Colors.white, size: 40),
+
+                          const SizedBox(width: 30),
+                          GestureDetector(
+                            onTap: _pickFromGallery,
+                            child: Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withOpacity(0.2),
+                                border: Border.all(
+                                  color: Colors.white54,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.photo_library,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
 
                       const SizedBox(height: 16),
@@ -105,7 +155,7 @@ class _CameraScreenState extends State<CameraScreen> {
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             );
           } else {

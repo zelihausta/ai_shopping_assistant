@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import '../models/product_detection.dart';
 import '../services/detection_service.dart';
 
@@ -16,6 +17,43 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   String? _errorMessage;
   List<ProductDetection> _detections = [];
 
+  late String _currentImagePath;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentImagePath = widget.imagePath;
+  }
+
+  Future<void> _cropImage() async {
+    try {
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: _currentImagePath,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Ürünü Kırp',
+            toolbarColor: Colors.black,
+            toolbarWidgetColor: Colors.white,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(title: 'Ürünü Kırp'),
+        ],
+      );
+
+      if (croppedFile != null && mounted) {
+        setState(() {
+          _currentImagePath = croppedFile.path;
+          _detections = [];
+          _errorMessage = null;
+        });
+      }
+    } catch (e, s) {
+      debugPrint("CROP ERROR: $e");
+      debugPrint("$s");
+    }
+  }
+
+
   Future<void> _analyzeImage() async {
     setState(() {
       _isLoading = true;
@@ -25,7 +63,8 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
 
     try {
       final result =
-      await DetectionService.detectProducts(widget.imagePath);
+      await DetectionService.detectProducts(_currentImagePath);
+
       setState(() {
         _detections = result;
       });
@@ -48,9 +87,11 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
         fit: StackFit.expand,
         children: [
           Image.file(
-            File(widget.imagePath),
-            fit: BoxFit.cover,
+            File(_currentImagePath),
+            fit: BoxFit.contain,
+            alignment: Alignment.center,
           ),
+
           Positioned(
             top: 40,
             left: 20,
@@ -71,7 +112,26 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
             ),
           ),
 
-          // ⬇️ Alt panel
+          Positioned(
+            top: 40,
+            right: 20,
+            child: GestureDetector(
+              onTap: _cropImage,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.crop,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+            ),
+          ),
+
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -123,6 +183,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                   ),
 
                   const SizedBox(height: 16),
+
                   if (!_isLoading && _detections.isEmpty)
                     Text(
                       "Herhangi bir ürün algılanamadı.",
@@ -131,26 +192,23 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                         fontSize: 16,
                       ),
                     ),
+
                   if (_detections.isNotEmpty)
                     SizedBox(
-                      height:
-                      MediaQuery.of(context).size.height * 0.3,
+                      height: MediaQuery.of(context).size.height * 0.3,
                       child: ListView.builder(
                         itemCount: _detections.length,
                         itemBuilder: (context, index) {
                           final d = _detections[index];
 
                           return Container(
-                            margin:
-                            const EdgeInsets.only(bottom: 12),
+                            margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: Colors.white10,
-                              borderRadius:
-                              BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: Colors.redAccent
-                                    .withOpacity(0.5),
+                                color: Colors.redAccent.withOpacity(0.5),
                                 width: 1,
                               ),
                             ),
@@ -158,7 +216,6 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                               mainAxisAlignment:
                               MainAxisAlignment.spaceBetween,
                               children: [
-                                // 🧾 Ürün bilgileri
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -169,19 +226,16 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 18,
-                                          fontWeight:
-                                          FontWeight.bold,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
                                         d.ingredients,
                                         maxLines: 2,
-                                        overflow:
-                                        TextOverflow.ellipsis,
+                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
-                                          color: Colors.white
-                                              .withOpacity(0.7),
+                                          color: Colors.white.withOpacity(0.7),
                                           fontSize: 14,
                                         ),
                                       ),
@@ -190,16 +244,14 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                                         Text(
                                           "Güven: %${(d.confidence * 100).toStringAsFixed(0)}",
                                           style: TextStyle(
-                                            color: Colors.white
-                                                .withOpacity(0.5),
+                                            color:
+                                            Colors.white.withOpacity(0.5),
                                             fontSize: 12,
                                           ),
                                         ),
                                     ],
                                   ),
                                 ),
-
-
                                 Text(
                                   "${d.price.toStringAsFixed(2)} ₺",
                                   style: const TextStyle(
