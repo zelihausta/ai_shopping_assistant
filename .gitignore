@@ -43,6 +43,11 @@ backend/venv/
 backend/best.pt
 datasets/
 
+runs/
+*.pt
+*.onnx
+*.tflite
+*.torchscript
 
 # Symbolication related
 app.*.symbols
