@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/product_detection.dart';
 
 class DetectionService {
-  static const String _baseUrl = 'http://172.20.10.5:8000';
+  static const String _baseUrl = 'http://10.87.224.235:8000';
 
 
   static Future<List<ProductDetection>> detectProducts(String imagePath) async {
