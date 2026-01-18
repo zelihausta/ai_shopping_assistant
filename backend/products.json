@@ -1,20 +1,26 @@
 {
-  "Classic": {
+  "Nescafe_Classic": {
     "brand": "Nescafé",
     "name": "Nescafé Classic",
     "ingredients": "Kavrulmuş ve öğütülmüş kahve çekirdekleri",
     "price": 75
   },
-  "Gold": {
+  "Nescafe_Gold": {
     "brand": "Nescafé",
     "name": "Nescafé Gold",
-    "ingredients": "yüksek kaliteli Arabica ve Robusta çekirdeklerinin özenli bir karışımından yapılır",
+    "ingredients": "Yüksek kaliteli Arabica ve Robusta çekirdeklerinin özenli bir karışımı",
     "price": 95
   },
-  "Indo-Cafe": {
+  "Nescafe_IndoCafe": {
     "brand": "Nescafé",
     "name": "Nescafé Indo-Café",
     "ingredients": "Kahve ve Hindistan cevizi aroması",
     "price": 85
+  },
+  "Lays": {
+    "brand": "Lay’s",
+    "name": "Lay’s Klasik Patates Cipsi",
+    "ingredients": "Patates, bitkisel yağ, tuz",
+    "price": 35
   }
 }
